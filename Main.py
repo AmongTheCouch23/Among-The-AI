@@ -37,21 +37,17 @@ class VoiceAssistant:
 
     def listen(self):
         with sr.Microphone() as source:
-            # You can add some wait or static noise thresholding here.
             print("Listening...")
             audio = self.recognizer.listen(source)
             print("Processing...")
             try:
-                # Try to recognize the recorded audio.
                 statement = self.recognizer.recognize_google(audio)
                 print("You said: ", statement)
                 return statement
             except sr.RequestError:
-                # API was unreachable or unresponsive
                 print("API unavailable/unresponsive")
                 return ""
             except sr.UnknownValueError:
-                # speech was unintelligible
                 print("Unable to recognize speech")
                 return ""
 
@@ -64,9 +60,9 @@ class VoiceAssistant:
         total_prompt = f"{str(self.role_based_personality_profile)}. Think like a friendly person. Now, regarding your question, '{prompt}'"
         response = self.openai.Completion.create(engine="davinci-002", prompt=total_prompt, temperature=0.6, max_tokens=400)
         text = response.choices[0].text.strip()
-        sentences = nltk.sent_tokenize(text)  # breaks text into sentences
+        sentences = nltk.sent_tokenize(text)
         condensed_text = ' '.join(sentences[:2])
-        self.speak(condensed_text)  # Speak the generated text answer
+        self.speak(condensed_text)
 
     def execute_command(self, command):
         if self.paused:
@@ -93,7 +89,7 @@ class VoiceAssistant:
                 self.speak("Goodbye!")
                 self.running = False
             else:
-                self.generate_text(command)  # Generate text if command is not recognized
+                self.generate_text(command)
 
     def play_song(self, command):
         song_query = re.search(r'play (.+)', command).group(1)
